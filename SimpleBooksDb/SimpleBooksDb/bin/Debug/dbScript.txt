@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS books (bookId INTEGER PRIMARY KEY AUTOINCREMENT,
+								  bookTitle TEXT NOT NULL,
+								  bookGenre TEXT NOT NULL,
+								  author INTEGER NOT NULL,
+								  FOREIGN KEY (author) REFERENCES authors(authorID));
+
+CREATE TABLE IF NOT EXISTS authors (authorId INTEGER PRIMARY KEY AUTOINCREMENT,
+								    authorName TEXT NOT NULL);
+
+CREATE VIEW IF NOT EXISTS BooksWithAuthor AS
+	SELECT bookId, bookTitle, bookGenre, authorName
+	FROM books
+	INNER JOIN authors ON authors.authorId = books.author;
