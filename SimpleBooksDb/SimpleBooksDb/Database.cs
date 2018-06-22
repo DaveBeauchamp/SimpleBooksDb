@@ -7,31 +7,31 @@ using System.Data.SQLite;
 using Dapper;
 using System.IO;
 
-// this is meant to be the backend. yes it is a crude and simple example  
 namespace BooksSingleTableDb
-{
+{   
+    /// <summary>
+    /// This class has all of the methods for creating and interacting with the database
+    /// </summary>
     public class Database
     {
+        /// <summary>
+        /// Variable available to all of the methods in the class
+        /// </summary>
         public const string CONNECTION_STRING = "Data Source=Books.db;Version=3";
 
+        /// <summary>
+        /// Create database method, the database script handles if the table have already been made
+        /// so it will not overwrite the existing database
+        /// </summary>
         public void SeedDatabase()
         {
             try
             {
-                // yes this a bit backhanded though it does make it obvious that I want it to do nothing
-                // if the db already exists (more to highlight the situation)
-                if (File.Exists("Books.db"))
-                {
-                    // do nothing
-                }
-                else
-                {
-                    string seed = File.ReadAllText("dbScript.txt");
+                string seed = File.ReadAllText("dbScript.txt");
 
-                    using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
-                    {
-                        var cmd = db.Execute(seed);
-                    }
+                using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
+                {
+                    var cmd = db.Execute(seed);
                 }
             }
 
@@ -41,6 +41,10 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to get all of the records in the BooksWithAuthor view
+        /// </summary>
+        /// <returns>A list containing all of the records in the BooksWithAuthor view</returns>
         public List<BooksWithAuthorName> GetAllBooksWithAuthors()
         {
             using (SQLiteConnection db = new SQLiteConnection(CONNECTION_STRING))
@@ -57,7 +61,11 @@ namespace BooksSingleTableDb
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Query to get all of the records in the authors table
+        /// </summary>
+        /// <returns>A list containing all of the records in the authors table</returns>
         public List<Author> GetAllAuthors()
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -68,15 +76,18 @@ namespace BooksSingleTableDb
                     var list = db.Query<Author>(query).ToList();
                     return list;
                 }
-                catch (Exception ex)
+                catch 
                 {
                     return new List<Author>();
-                    ;       //this line just to do quick debug can't be bothered with an error log txt file
                 }
             }
         }
 
         #region AddEditAuthorsAndBooks
+        /// <summary>
+        /// Query to Insert records in the authors table
+        /// </summary>
+        /// <param name="authorName">The value for this param is taken from txtAuthorName from frmMain</param>
         public void insertAuthor(string authorName)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
@@ -96,6 +107,11 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to Update records in the authors table
+        /// </summary>
+        /// <param name="authorId">The value for this param is taken from lblAuthorID from frmMain</param>
+        /// <param name="authorName">The value for this param is taken from txtAuthorName from frmMain</param>
         public void updateAuthor(string authorId, string authorName)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
@@ -115,6 +131,12 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to Insert records in the authors table
+        /// </summary>
+        /// <param name="bookTitle">The value for this param is taken from txtBookTitle from frmMain</param>
+        /// <param name="bookGenre">The value for this param is taken from txtBookGenre from frmMain</param>
+        /// <param name="authorDropdown">The value for this param is taken from cboAuthor from frmMain</param>
         public void InsertBook(string bookTitle, string bookGenre, string authorDropdown)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
@@ -133,7 +155,14 @@ namespace BooksSingleTableDb
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Query to Update records in the authors table
+        /// </summary>
+        /// <param name="bookTitle">The value for this param is taken from txtBookTitle from frmMain</param>
+        /// <param name="bookGenre">The value for this param is taken from txtBookGenre from frmMain</param>
+        /// <param name="authorDropdown">The value for this param is taken from cboAuthor from frmMain</param>
+        /// <param name="bookId">The value for this param is taken from lblBookEditID from frmMain</param>
         public void updateBooks(string bookTitle, string bookGenre, string authorDropdown, string bookId)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING).OpenAndReturn())
@@ -155,6 +184,10 @@ namespace BooksSingleTableDb
         #endregion
 
         #region AuthorNavigationButtons
+        /// <summary>
+        /// Query to get the first record in the authors table
+        /// </summary>
+        /// <returns>An object containing a single row in the authors table</returns>
         public Author getFirstAuthor()
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -165,6 +198,10 @@ namespace BooksSingleTableDb
             }   
         }
 
+        /// <summary>
+        /// Query to get the last record in the authors table
+        /// </summary>
+        /// <returns>An object containing a single row in the authors table</returns>
         public Author getLastAuthor()
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -175,6 +212,11 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to get the next record in the authors table
+        /// </summary>
+        /// <param name="authorId">The value for this param is taken from lblAuthorID from frmMain</param>
+        /// <returns>An object containing a single row in the authors table</returns>
         public Author getNextAuthor(string authorId)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -186,6 +228,11 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to get the previous record in the authors table
+        /// </summary>
+        /// <param name="authorId">The value for this param is taken from lblAuthorID from frmMain</param>
+        /// <returns>An object containing a single row in the authors table</returns>
         public Author getPreviousAuthor(string authorId)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -197,52 +244,12 @@ namespace BooksSingleTableDb
             }
         }
         #endregion
-
-        #region BookNavigationButtons
-        public BooksWithAuthorName getFirstBook()
-        {
-            using (var db = new SQLiteConnection(CONNECTION_STRING))
-            {
-                var query = "SELECT * FROM BooksWithAuthor ORDER BY bookId ASC LIMIT 1";
-                var result = db.QuerySingle<BooksWithAuthorName>(query);
-                return result;
-            }
-        }
-
-        public BooksWithAuthorName getLastBook()
-        {
-            using (var db = new SQLiteConnection(CONNECTION_STRING))
-            {
-                var query = "SELECT * FROM BooksWithAuthor ORDER BY bookId DESC LIMIT 1";
-                var result = db.QuerySingle<BooksWithAuthorName>(query);
-                return result;
-            }
-        }
-
-        public BooksWithAuthorName getNextBook(string bookId)
-        {
-            using (var db = new SQLiteConnection(CONNECTION_STRING))
-            {
-                var query = "SELECT * FROM BooksWithAuthor WHERE bookId > @id LIMIT 1";
-                var param = new { id = bookId };
-                var result = db.QuerySingle<BooksWithAuthorName>(query, param);
-                return result;
-            }
-        }
-
-        public BooksWithAuthorName getPreviousBook(string bookId)
-        {
-            using (var db = new SQLiteConnection(CONNECTION_STRING))
-            {
-                var query = "SELECT * FROM BooksWithAuthor WHERE bookId < @id ORDER BY bookId DESC LIMIT 1";
-                var param = new { id = bookId };
-                var result = db.QuerySingle<BooksWithAuthorName>(query, param);
-                return result;
-            }
-        }
-        #endregion
-
+        
         #region AllBooksNavigation
+        /// <summary>
+        /// Query to get the first record in the BooksWithAuthor view
+        /// </summary>
+        /// <returns>An object containing a single row in the BooksWithAuthor view</returns>
         public BooksWithAuthorName getFirstBookAndAuthor()
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -253,6 +260,10 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to get the last record in the BooksWithAuthor view
+        /// </summary>
+        /// <returns>An object containing a single row in the BooksWithAuthor view</returns>
         public BooksWithAuthorName getLastBookAndAuthor()
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -262,7 +273,13 @@ namespace BooksSingleTableDb
                 return result;
             }
         }
-
+        
+        /// <summary>
+        /// Query to get the next record in the BooksWithAuthor view
+        /// </summary>
+        /// <param name="bookId">The value for this param is taken from lblBookEditID for 
+        /// the book add and edit and lblBookId for the book navigation on frmMain</param>
+        /// <returns>An object containing a single row in the BooksWithAuthor view</returns>
         public BooksWithAuthorName getNextBookAndAuthor(string bookId)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))
@@ -274,6 +291,12 @@ namespace BooksSingleTableDb
             }
         }
 
+        /// <summary>
+        /// Query to get the previous record in the BooksWithAuthor view
+        /// </summary>
+        /// <param name="bookId">The value for this param is taken from lblBookEditID for 
+        /// the book add and edit and lblBookId for the book navigation on frmMain</param>
+        /// <returns>An object containing a single row in the BooksWithAuthor view</returns>
         public BooksWithAuthorName getPreviousBookAndAuthor(string bookId)
         {
             using (var db = new SQLiteConnection(CONNECTION_STRING))

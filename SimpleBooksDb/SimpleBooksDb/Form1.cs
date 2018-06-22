@@ -12,18 +12,28 @@ namespace BooksSingleTableDb
 {
     public partial class frmMain : Form
     {
+        // creating an instance of booksNAuthors accessable to the entire form
         List<BooksWithAuthorName> booksNAuthors;
 
         public frmMain()
         {
             InitializeComponent();
 
+            // could have made this data instance available globally though just decided not too
+            // Database class methods are available data.methodName();
             Database data = new Database();
+
+            // seed database when the form runs
             data.SeedDatabase();
+
+            // store the values from the GetAllBooksWithAuthors method to use as data source for the dgv
+            // on form load
             booksNAuthors = data.GetAllBooksWithAuthors();
             dgvBookList.DataSource = null;
             dgvBookList.DataSource = booksNAuthors;
 
+            // store the values from the GetAllAuthors method to use as data source for the comboBox
+            // on form load
             var listOfAuth = data.GetAllAuthors();
             cboAuthor.DataSource = listOfAuth;
             cboAuthor.DisplayMember = "authorName";
@@ -33,8 +43,11 @@ namespace BooksSingleTableDb
         #region AuthorAddEditButtons
         private void btnAuthorSave_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // if label value is "0" insert new author if not "0" update the author 
+            // look in the Database class for more information on the methods used
             if (lblAuthorID.Text == "0")
             {
                 try
@@ -61,6 +74,7 @@ namespace BooksSingleTableDb
             }
         }
 
+        // clears the fields to basic values
         private void btnAuthorNew_Click(object sender, EventArgs e)
         {
             lblAuthorID.Text = "0";
@@ -71,8 +85,10 @@ namespace BooksSingleTableDb
         #region AuthorNavigationButtons
         private void btnAuthorFirst_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var authorData = data.getFirstAuthor();
@@ -88,8 +104,10 @@ namespace BooksSingleTableDb
 
         private void btnAuthorLast_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var authorData = data.getLastAuthor();
@@ -105,8 +123,10 @@ namespace BooksSingleTableDb
 
         private void btnAuthorPrevious_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var authorData = data.getPreviousAuthor(lblAuthorID.Text);
@@ -122,8 +142,10 @@ namespace BooksSingleTableDb
 
         private void btnAuthorNext_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var authorData = data.getNextAuthor(lblAuthorID.Text);
@@ -141,8 +163,11 @@ namespace BooksSingleTableDb
         #region BookAddEditButtons
         private void btnBookSave_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // if label value is "0" insert new book if not "0" update the book
+            // look in the Database class for more information on the methods used
             if (lblBookEditID.Text == "0")
             {
                 try
@@ -169,6 +194,7 @@ namespace BooksSingleTableDb
             }
         }
 
+        // clears the fields to basic values
         private void btnBookNew_Click(object sender, EventArgs e)
         {
             lblBookEditID.Text = "0";
@@ -177,6 +203,8 @@ namespace BooksSingleTableDb
             cboAuthor.SelectedValue = string.Empty; // not sure if this will break the combo box  
         }
 
+        // click event to refresh the comboBox values (if an author has been added you will always 
+        // have an up  to date list)
         private void cboAuthor_Click(object sender, EventArgs e)
         {
             Database data = new Database();
@@ -190,11 +218,13 @@ namespace BooksSingleTableDb
         #region BookNavigationButtons
         private void btnBookFirst_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
-                var bookData = data.getFirstBook();
+                var bookData = data.getFirstBookAndAuthor();
                 lblBookEditID.Text = bookData.BookId.ToString();
                 txtBookTitle.Text = bookData.BookTitle.ToString();
                 txtBookGenre.Text = bookData.BookGenre.ToString();
@@ -210,11 +240,13 @@ namespace BooksSingleTableDb
 
         private void btnBookLast_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
-                var bookData = data.getLastBook();
+                var bookData = data.getLastBookAndAuthor();
                 lblBookEditID.Text = bookData.BookId.ToString();
                 txtBookTitle.Text = bookData.BookTitle.ToString();
                 txtBookGenre.Text = bookData.BookGenre.ToString();
@@ -230,11 +262,13 @@ namespace BooksSingleTableDb
 
         private void btnBookPrev_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
-                var bookData = data.getPreviousBook(lblBookEditID.Text);
+                var bookData = data.getPreviousBookAndAuthor(lblBookEditID.Text);
                 lblBookEditID.Text = bookData.BookId.ToString();
                 txtBookTitle.Text = bookData.BookTitle.ToString();
                 txtBookGenre.Text = bookData.BookGenre.ToString();
@@ -250,11 +284,13 @@ namespace BooksSingleTableDb
 
         private void btnBookNext_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
-                var bookData = data.getNextBook(lblBookEditID.Text);
+                var bookData = data.getNextBookAndAuthor(lblBookEditID.Text);
                 lblBookEditID.Text = bookData.BookId.ToString();
                 txtBookTitle.Text = bookData.BookTitle.ToString();
                 txtBookGenre.Text = bookData.BookGenre.ToString();
@@ -272,8 +308,10 @@ namespace BooksSingleTableDb
         #region Navigation
         private void btnFirst_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var navData = data.getFirstBookAndAuthor();
@@ -292,8 +330,10 @@ namespace BooksSingleTableDb
 
         private void btnLast_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var navData = data.getLastBookAndAuthor();
@@ -312,8 +352,10 @@ namespace BooksSingleTableDb
 
         private void btnPrev_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var navData = data.getPreviousBookAndAuthor(lblBookId.Text);
@@ -332,8 +374,10 @@ namespace BooksSingleTableDb
 
         private void btnNext_Click(object sender, EventArgs e)
         {
+            // Database class methods are available data.methodName() from this instance
             Database data = new Database();
 
+            // look in the Database class for more information on the methods used
             try
             {
                 var navData = data.getNextBookAndAuthor(lblBookId.Text);
@@ -350,6 +394,8 @@ namespace BooksSingleTableDb
             }
         }
 
+        // gets the values in the row that has been double clicked and shows them in the book information
+        // to the left of the grid
         private void dgvBookList_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -363,6 +409,7 @@ namespace BooksSingleTableDb
             }
         }
 
+        // clears the fields to basic values
         private void btnClear_Click(object sender, EventArgs e)
         {
             lblBookId.Text = "0";
@@ -371,6 +418,7 @@ namespace BooksSingleTableDb
             lblBookAuthor.Text = string.Empty;
         }
 
+        // refreshes the dgv, If new records have been added they will be displayed
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             Database data = new Database();
